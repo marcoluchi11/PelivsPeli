@@ -1,5 +1,7 @@
 var con = require('../conexionBD');
-function buscarCompetencias(req,res){
+var controller = {
+    
+    buscarCompetencias: function(req,res){
 
         var sql = 'select * from competencia'
         console.log(sql);
@@ -11,11 +13,7 @@ function buscarCompetencias(req,res){
             console.log(resultado);
             res.send(JSON.stringify(resultado));
         })
-    
-        
+     
+     }   
 }
-module.exports = {
-
-    buscarCompetencias: buscarCompetencias,
-
-}
+module.exports = controller

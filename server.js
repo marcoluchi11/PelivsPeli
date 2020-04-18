@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 app.get('/competencias',controlador.buscarCompetencias);
+app.get('/competencias/:id/peliculas',controlador.obtenerOpciones);
 var puerto = '8080';
 
 app.listen(puerto, function () {

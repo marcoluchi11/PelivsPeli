@@ -35,6 +35,7 @@ var controller = {
 
                     if(error) return res.status(500).json(error);
                     var respuesta = {
+                        //FALTA HACER QUE APAREZCA EL NOMBRE DE LA COMPETENCIA
                         'id': resultadoCompetencia[0],
                         'peliculas':resultadoPeliculas,
                     }
@@ -64,6 +65,25 @@ var controller = {
                 res.send(JSON.stringify(response));
 
             })
+
+    },
+
+    mostrarResultados: function(req,res){
+            var id = req.params.id;
+        var sql = 'select pelicula.id, pelicula.poster, pelicula.titulo, count(*) as votos from pelicula join votos on pelicula.id = votos.pelicula_id join competencia on competencia.id = votos.competencia_id where competencia.id = '+id+' group by pelicula.titulo order by votos desc limit 3';
+        con.query(sql,function(error,results,fields){
+
+            if(error){
+                console.log('Hubo un error en la consulta', error.message);
+                return res.status(404).send('hubo un error en la consulta');
+            }
+            if(error) return res.status(500).json(error);
+
+            var response = {
+                'resultados': results,
+            }
+            res.send(JSON.stringify(response));
+        })
 
     }
 }

@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.get('/competencias',controlador.buscarCompetencias);
 app.get('/competencias/:id/peliculas',controlador.obtenerOpciones);
+app.post('/competencias/:id/voto',controlador.agregarVoto);
 var puerto = '8080';
 
 app.listen(puerto, function () {

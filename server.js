@@ -15,6 +15,7 @@ app.post('/competencias',controlador.crearCompetencia);
 app.get('/competencias/:id/peliculas',controlador.obtenerOpciones);
 app.post('/competencias/:id/voto',controlador.agregarVoto);
 app.get('/competencias/:id/resultados',controlador.mostrarResultados);
+app.delete('/competencias/:id/votos',controlador.reiniciarVotos);
 var puerto = '8080';
 
 app.listen(puerto, function () {

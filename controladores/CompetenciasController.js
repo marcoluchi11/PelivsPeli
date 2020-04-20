@@ -106,6 +106,25 @@ var controller = {
                     res.send(JSON.stringify(results));
                 })
             })
+    },
+    reiniciarVotos: function(req,res){
+
+                var id = req.params.id;
+                var sql = 'delete from votos where competencia_id = ' + id;
+                console.log(sql);
+                con.query(sql,function(error,results,fields){
+
+                    if(error){
+                        console.log('Hubo un error en la consulta', error.message);
+                        return res.status(404).send('hubo un error en la consulta');
+                    }
+                    if(error) return res.status(500).json(error);
+                    console.log('Se Reinicio la competencia con exito');
+                    res.send(JSON.stringify(results));
+
+
+                })
+               
     }
 }
 module.exports = controller;

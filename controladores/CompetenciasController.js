@@ -85,6 +85,27 @@ var controller = {
             res.send(JSON.stringify(response));
         })
 
+    },
+    crearCompetencia: function(req,res){
+
+                var request = req.body;
+                var nuevaCompetencia = request.nombre;
+                con.query('select nombre from competencia', function(error,resultadoCompetencia,fields){
+                    for(var i=0;i<resultadoCompetencia.length;i++){
+                        if(nuevaCompetencia === resultadoCompetencia[i].nombre){
+                            return res.status(422).send('ya hay un nombre existente en la lista de competencias ')
+                        }
+                    }
+                con.query('INSERT INTO competencia (nombre) values (?)',[nuevaCompetencia],function(error,results,fields){
+                    
+                    if(error){
+                        console.log('Hubo un error en la consulta', error.message);
+                        return res.status(404).send('hubo un error en la consulta');
+                    }
+                    if(error) return res.status(500).json(error);
+                    res.send(JSON.stringify(results));
+                })
+            })
     }
 }
 module.exports = controller;

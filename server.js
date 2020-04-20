@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 app.get('/competencias',controlador.buscarCompetencias);
+app.post('/competencias',controlador.crearCompetencia);
 app.get('/competencias/:id/peliculas',controlador.obtenerOpciones);
 app.post('/competencias/:id/voto',controlador.agregarVoto);
 app.get('/competencias/:id/resultados',controlador.mostrarResultados);

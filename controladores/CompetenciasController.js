@@ -3,7 +3,7 @@ var controller = {
     
     buscarCompetencias: function(req,res){
 
-        var sql = 'select * from competencia'
+        var sql = 'SELECT * FROM competencia'
         con.query(sql,function(error,resultado,fields){
             if(error){
                 console.log('Hubo un error en la consulta', error.message);
@@ -14,43 +14,63 @@ var controller = {
      
      },
     obtenerOpciones: function(req,res){
-
-            var id = req.params.id;
+            // const genero = req.body.genero === '0' ? null : req.body.genero
+            let id = req.params.id;
             //ID DE PELICULA, POSTER Y TITULO DE PELICULA
-            var sql = 'select * from pelicula order by rand() limit 2;';
-            var sql2 = 'select * from competencia where id = '+id;
-            console.log(sql);
-            console.log(sql2);
-            con.query(sql,function(error,resultadoPeliculas,fields){
-                if(error){
-                    console.log('Hubo un error en la consulta', error.message);
-                    return res.status(404).send('hubo un error en la consulta');
-                }
-                if(error) return res.status(500).json(error);
+            let sql = 'SELECT * FROM pelicula JOIN competencia ON pelicula.genero_id = competencia.genero_id WHERE competencia.id = '+id+' ORDER BY rand() LIMIT 2;';
+            let sql2 = 'SELECT * FROM competencia WHERE id = '+id;
+
                 con.query(sql2,function(error,resultadoCompetencia,fields){
                     if(error){
                         console.log('Hubo un error en la consulta', error.message);
                         return res.status(404).send('hubo un error en la consulta');
                     }
+                    console.log('El resultado compe es : ' ,resultadoCompetencia[0].genero_id);
+                    if(resultadoCompetencia[0].genero_id === null){
 
+                        sql = 'SELECT titulo,id,poster FROM pelicula ORDER BY rand() LIMIT 2;'
+                        con.query(sql,function(error,resultadoPeliculas,fields){
+                            if(error){
+                                    console.log('Hubo un error en la consulta', error.message);
+                                    return res.status(404).send('hubo un error en la consulta');
+                                    }
+                            if(error) return res.status(500).json(error);
+                            let respuesta = {
+                            //FALTA HACER QUE APAREZCA EL NOMBRE DE LA COMPETENCIA
+                                    'id': resultadoCompetencia,
+                                    'peliculas':resultadoPeliculas,
+                        }
+                        res.send(JSON.stringify(respuesta));
+                        });
+                    }else{
+                        
+                con.query(sql,function(error,resultadoPeliculas,fields){
+                        if(error){
+                            console.log('Hubo un error en la consulta', error.message);
+                            return res.status(404).send('hubo un error en la consulta');
+                        }
                     if(error) return res.status(500).json(error);
-                    var respuesta = {
+                    let respuesta = {
                         //FALTA HACER QUE APAREZCA EL NOMBRE DE LA COMPETENCIA
-                        'id': resultadoCompetencia[0],
+                        'id': resultadoCompetencia,
                         'peliculas':resultadoPeliculas,
                     }
-                    console.log(resultadoPeliculas);
-                    console.log(resultadoCompetencia[0]);
                     res.send(JSON.stringify(respuesta));
-            });
-        })
+                
+                });
+            }
+        });
+            
     },
+
+        
+    
     agregarVoto: function(req,res){
 
             var nuevoVoto = req.body;
             var idPelicula = nuevoVoto.idPelicula;
             var idCompetencia = req.params.id;
-            con.query('INSERT INTO votos (pelicula_id,competencia_id) values (?,?)',[idPelicula, idCompetencia],function(error,results,fields){
+            con.query('INSERT INTO votos (pelicula_id,competencia_id) VALUES (?,?)',[idPelicula, idCompetencia],function(error,results,fields){
                 if(error){
                     console.log('Hubo un error en la consulta', error.message);
                     return res.status(404).send('hubo un error en la consulta');
@@ -90,13 +110,13 @@ var controller = {
 
                 var request = req.body;
                 var nuevaCompetencia = request.nombre;
-                con.query('select nombre from competencia', function(error,resultadoCompetencia,fields){
+                con.query('SELECT nombre FROM competencia', function(error,resultadoCompetencia,fields){
                     for(var i=0;i<resultadoCompetencia.length;i++){
                         if(nuevaCompetencia === resultadoCompetencia[i].nombre){
                             return res.status(422).send('ya hay un nombre existente en la lista de competencias ')
                         }
                     }
-                con.query('INSERT INTO competencia (nombre) values (?)',[nuevaCompetencia],function(error,results,fields){
+                con.query('INSERT INTO competencia (nombre) VALUES (?)',[nuevaCompetencia],function(error,results,fields){
                     
                     if(error){
                         console.log('Hubo un error en la consulta', error.message);
@@ -110,7 +130,7 @@ var controller = {
     reiniciarVotos: function(req,res){
 
                 var id = req.params.id;
-                var sql = 'delete from votos where competencia_id = ' + id;
+                var sql = 'DELETE FROM votos WHERE competencia_id = ' + id;
                 console.log(sql);
                 con.query(sql,function(error,results,fields){
 
@@ -125,6 +145,10 @@ var controller = {
 
                 })
                
+    },
+    agregarGeneros: function (req,res){
+
+                
     }
 }
 module.exports = controller;

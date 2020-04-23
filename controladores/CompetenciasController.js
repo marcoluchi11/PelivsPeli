@@ -144,6 +144,51 @@ var controller = {
                 })
                
     },
+    eliminarCompetencia: function(req,res){
+                let id = req.params.id;
+                let sqlVotos = 'DELETE FROM votos WHERE competencia_id = ' +id;
+                let sqlCompetencia = 'DELETE FROM competencia WHERE id = '+id;
+                con.query(sqlVotos,function(error,resultadoVotos,fields){
+                    if(error){
+                        console.log('Hubo un error en la consulta', error.message);
+                        return res.status(404).send('hubo un error en la consulta');
+                    }
+                    if(error) return res.status(500).json(error);
+                    console.log('se eliminaron los votos con exito');
+                    con.query(sqlCompetencia,function(error,resultadoCompetencia,fields){
+
+                        if(error){
+                            console.log('Hubo un error en la consulta', error.message);
+                            return res.status(404).send('hubo un error en la consulta');
+                        }
+                        if(error) return res.status(500).json(error);
+                        console.log('Se elimino la competencia con exito');
+                        res.send(JSON.stringify(resultadoVotos,resultadoCompetencia));
+                    })
+                })     
+                
+
+                
+    },
+
+    editarCompetencia : function(req,res){
+        
+            let id = req.params.id;
+            let request = req.body;
+            let nombre = request.nombre;
+            console.log(nombre);
+            let sql = 'UPDATE competencia SET nombre = '+'"'+nombre+'"'+' where id = '+id;
+            console.log(sql);
+            con.query(sql,function(error,results,fields){
+                if(error){
+                    console.log('Hubo un error en la consulta', error.message);
+                    return res.status(404).send('hubo un error en la consulta');
+                }
+                if(error) return res.status(500).json(error);
+                res.send(JSON.stringify(results));
+            })
+
+    },
     agregarGeneros: function (req,res){
 
                 let sql = 'select * from genero;';

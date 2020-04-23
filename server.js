@@ -15,6 +15,8 @@ app.get('/generos',controlador.agregarGeneros)
 app.get('/directores',controlador.agregarDirectores);
 app.get('/actores',controlador.agregarActores);
 app.post('/competencias',controlador.crearCompetencia);
+app.delete('/competencias/:id',controlador.eliminarCompetencia);
+app.put('/competencias/:id',controlador.editarCompetencia)
 app.get('/competencias/:id/peliculas',controlador.obtenerOpciones);
 app.post('/competencias/:id/voto',controlador.agregarVoto);
 app.get('/competencias/:id/resultados',controlador.mostrarResultados);

@@ -17,36 +17,37 @@ var controller = {
            
             let id = req.params.id;
             //ID DE PELICULA, POSTER Y TITULO DE PELICULA
-            let sql;
-            let sql2 = 'SELECT * FROM competencia WHERE id = '+id;
+            let sqlQuery;
+            let sqlCompetencia = "SELECT nombre, genero_id, director_id, actor_id FROM competencia WHERE id = " + id + ";";
 
-            con.query(sql2,function(error,resultadoCompetencia,fields){
+            con.query(sqlCompetencia,function(error,resultadoCompetencia,fields){
                 if(error){
                     console.log('Hubo un error en la consulta', error.message);
                     return res.status(404).send('hubo un error en la consulta');
                 }
-                    
-                if(resultadoCompetencia[0].genero_id === null && resultadoCompetencia[0].director_id === null){
-                        sql = 'SELECT titulo,id,poster FROM pelicula ORDER BY rand() LIMIT 2;'
-                    }else if(resultadoCompetencia[0].genero_id != null && resultadoCompetencia[0].director_id != null){
-                        sql = 'SELECT titulo,pelicula.id,poster FROM pelicula INNER JOIN competencia ON pelicula.genero_id = competencia.genero_id JOIN director ON competencia.director_id = director.id WHERE competencia.id = '+id +' ORDER BY rand() LIMIT 2;';
-                    }else if(resultadoCompetencia[0].genero_id != null && resultadoCompetencia[0].director_id === null){
-                            sql = 'SELECT titulo,pelicula.id,poster FROM pelicula JOIN competencia ON pelicula.genero_id = competencia.genero_id WHERE competencia.id = '+id+' ORDER BY rand() LIMIT 2;';
-                    }else if(resultadoCompetencia[0].genero_id === null && resultadoCompetencia[0].director_id != null){
-                       sql =  'SELECT titulo,pelicula.id,poster FROM competencia JOIN director on director.id = competencia.director_id JOIN pelicula ON pelicula.director = director.nombre WHERE competencia.id = '+id +' ORDER BY rand() LIMIT 2;';
-                    }   
-                        
-                    con.query(sql,function(error,resultadoPeliculas,fields){
+                var queryPeliculas = "SELECT DISTINCT pelicula.id, poster, titulo, genero_id FROM pelicula LEFT JOIN actor_pelicula ON pelicula.id = actor_pelicula.pelicula_id LEFT JOIN director_pelicula ON pelicula.id = director_pelicula.pelicula_id WHERE 1 = 1";
+                var genero = resultadoCompetencia[0].genero_id;
+                var actor = resultadoCompetencia[0].actor_id;
+                var director = resultadoCompetencia[0].director_id;
+                var queryGenero = genero ? ' AND pelicula.genero_id = '  + genero : '';
+                var queryActor = actor ? ' AND actor_pelicula.actor_id = ' + actor : '';
+                var queryDirector = director ? ' AND director_pelicula.director_id = ' + director : '';
+                var orden = ' ORDER BY RAND() LIMIT 2';
+                
+                var sqlQuery = queryPeliculas + queryGenero + queryActor + queryDirector + orden;
+                console.log(sqlQuery);
+                    con.query(sqlQuery,function(error,resultadoPeliculas,fields){
+                            // VER VALIDADOR DE LENGTH
                             
-                            if(error || resultadoPeliculas.length < 2){
-                                    console.log('Hubo un error en la consulta', error.message);
+                            if(error){
+                                    console.log('Hubo un error en la consulta');
                                     return res.status(404).send('hubo un error en la consulta');
                             }
                             if(error) return res.status(500).json(error);
                             let respuesta = {
                                     //FALTA HACER QUE APAREZCA EL NOMBRE DE LA COMPETENCIA
-                                    'id': resultadoCompetencia,
-                                    'peliculas':resultadoPeliculas,
+                                    'peliculas': resultadoPeliculas,
+                                    'competencia': resultadoCompetencia[0].nombre
                             }
                             res.send(JSON.stringify(respuesta));
                             
@@ -99,22 +100,19 @@ var controller = {
 
     },
     crearCompetencia: function(req,res){
-//
+
                 let request = req.body;
                 let genero = request.genero === '0' ? null : request.genero;
                 let director = request.director === '0' ? null : request.director;
+                let actor = request.actor === '0' ? null : request.actor;
                 let nuevaCompetencia = request.nombre;
-                console.log('el req body es : ', request);
-                console.log('el genero elegido es :' + genero);
-                console.log('el director elegido es :' + director);
-                console.log('la nueva competencia es : '+ nuevaCompetencia);
                 con.query('SELECT nombre FROM competencia', function(error,resultadoCompetencia,fields){
                     for(let i=0;i<resultadoCompetencia.length;i++){
                         if(nuevaCompetencia === resultadoCompetencia[i].nombre){
                             return res.status(422).send('ya hay un nombre existente en la lista de competencias ')
                         }
                     }
-                con.query('INSERT INTO competencia (nombre,genero_id,director_id) VALUES (?,?,?)',[nuevaCompetencia,genero,director],function(error,results,fields){
+                con.query('INSERT INTO competencia (nombre,genero_id,director_id,actor_id) VALUES (?,?,?,?)',[nuevaCompetencia,genero,director,actor],function(error,results,fields){
                     
                     if(error){
                         console.log('Hubo un error en la consulta', error.message);

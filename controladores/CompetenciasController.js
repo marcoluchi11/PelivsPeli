@@ -112,15 +112,15 @@ var controller = {
                             return res.status(422).send('ya hay un nombre existente en la lista de competencias ')
                         }
                     }
-                con.query('INSERT INTO competencia (nombre,genero_id,director_id,actor_id) VALUES (?,?,?,?)',[nuevaCompetencia,genero,director,actor],function(error,results,fields){
-                    
-                    if(error){
-                        console.log('Hubo un error en la consulta', error.message);
-                        return res.status(404).send('hubo un error en la consulta');
-                    }
-                    if(error) return res.status(500).json(error);
-                    res.send(JSON.stringify(results));
-                })
+                    con.query('INSERT INTO competencia (nombre,genero_id,director_id,actor_id) VALUES (?,?,?,?)',[nuevaCompetencia,genero,director,actor],function(error,results,fields){
+                        
+                        if(error){
+                            console.log('Hubo un error en la consulta', error.message);
+                            return res.status(404).send('hubo un error en la consulta');
+                        }
+                        if(error) return res.status(500).json(error);
+                        res.send(JSON.stringify(results));
+                    })
             })
     },
     reiniciarVotos: function(req,res){

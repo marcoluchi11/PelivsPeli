@@ -8,7 +8,9 @@ app.use(cors());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
+/*ALTER DATABASE competencias CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE actor CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+*/  
 app.use(bodyParser.json());
 app.get('/competencias',controlador.buscarCompetencias);
 app.get('/generos',controlador.agregarGeneros)

@@ -10,6 +10,7 @@ let controller = {
                 console.log('Hubo un error en la consulta', error.message);
                 return res.status(404).send('hubo un error en la consulta');
             }
+            if(error) return res.status(500).json(error);
             res.send(JSON.stringify(resultado));
         })
      

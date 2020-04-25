@@ -1,6 +1,7 @@
 let con = require('../conexionBD');
 let controller = {
     
+    // SE OBTIENEN LAS COMPETENCIAS
     buscarCompetencias: function(req,res){
 
         let sql = 'SELECT * FROM competencia'
@@ -13,6 +14,7 @@ let controller = {
         })
      
      },
+     // SE OBTIENEN LOS RESULTADOS
     obtenerOpciones: function(req,res){
            
             let id = req.params.id;
@@ -54,7 +56,7 @@ let controller = {
                 });
             
     },
-
+    // SE AGREGA VOTO A PELICULA SELECCIONADA
     agregarVoto: function(req,res){
 
             let nuevoVoto = req.body;
@@ -75,7 +77,7 @@ let controller = {
 
             })
     },
-
+    // SE MUESTRAN RESULTADOS POR COMPETENCIA
     mostrarResultados: function(req,res){
             let id = req.params.id;
         let sql = 'select pelicula.id, pelicula.poster, pelicula.titulo, count(*) as votos from pelicula join votos on pelicula.id = votos.pelicula_id join competencia on competencia.id = votos.competencia_id where competencia.id = '+id+' group by pelicula.titulo order by votos desc limit 3';
@@ -93,7 +95,7 @@ let controller = {
             res.send(JSON.stringify(response));
         })
     },
-
+    // SE CREA COMPETENCIA CON SUS CORRECTAS VALIDACIONES
     crearCompetencia: function(req,res){
 
                 let request = req.body;
@@ -134,6 +136,7 @@ let controller = {
                 })
             })
     },
+    // REINICIO DE VOTOS POR COMPETENCIA
     reiniciarVotos: function(req,res){
 
                 let id = req.params.id;
@@ -153,7 +156,7 @@ let controller = {
                 })
                
     },
-
+    // ELIMINACION DE COMPETENCIA
     eliminarCompetencia: function(req,res){
                 let id = req.params.id;
                 let sqlVotos = 'DELETE FROM votos WHERE competencia_id = ' +id;
@@ -180,15 +183,13 @@ let controller = {
 
                 
     },
-
+    // EDICION DE COMPETENCIA;
     editarCompetencia : function(req,res){
         
             let id = req.params.id;
             let request = req.body;
             let nombre = request.nombre;
-            console.log(nombre);
             let sql = 'UPDATE competencia SET nombre = '+'"'+nombre+'"'+' where id = '+id;
-            console.log(sql);
             con.query(sql,function(error,resultado,fields){
                 if (resultado.length == 0){
                 console.log("No se encontro la pelicula buscada con ese id");
@@ -201,7 +202,7 @@ let controller = {
             
 
     },
-
+    // SE MUESTRAN LAS COMPETENCIAS
     nombreCompetencia: function (req, res){
         let id = req.params.id;
         let sql = "SELECT competencia.id, competencia.nombre, genero.nombre genero, director.nombre director, actor.nombre actor FROM competencia LEFT JOIN genero ON genero_id = genero.id LEFT JOIN director ON director_id= director.id LEFT JOIN actor ON actor_id= actor.id WHERE competencia.id = " + id;
@@ -221,7 +222,7 @@ let controller = {
             res.send(JSON.stringify(response));
         });
     },
-
+    // SE AGREGAN GENEROS
     agregarGeneros: function (req,res){
 
                 let sql = 'select * from genero;';
@@ -234,7 +235,7 @@ let controller = {
                     res.send(JSON.stringify(results));
                 })
     },
-
+    // SE AGREGAN DIRECTORES
     agregarDirectores: function(req,res){
 
         let sql = 'select * from director;';
@@ -247,7 +248,7 @@ let controller = {
             res.send(JSON.stringify(results));
         })
     },
-
+    // SE AGREGAN ACTORES
     agregarActores: function(req,res){
 
         let sql = 'select * from actor'
